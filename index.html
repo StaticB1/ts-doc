@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToraShaout Document Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset & Base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #030712;
+      color: #fff;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Colors */
+    :root {
+      --purple: #9333EA;
+      --purple-dark: #7C3AED;
+      --pink: #DB2777;
+      --pink-dark: #BE185D;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --gray-950: #030712;
+    }
+
+    /* Layout */
+    .container { max-width: 1024px; margin: 0 auto; padding: 1rem; }
+    
+    /* Header */
+    header {
+      background: #000;
+      border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-inner {
+      max-width: 1024px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-section { display: flex; align-items: center; gap: 0.75rem; }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .logo-text { font-weight: 700; font-size: 1.125rem; }
+    .text-purple { color: var(--purple); }
+    .text-pink { color: var(--pink); }
+    .logo-subtitle { font-size: 0.75rem; color: var(--gray-500); }
+    .header-badge {
+      font-size: 0.875rem;
+      color: var(--gray-400);
+      display: none;
+    }
+    @media (min-width: 640px) { .header-badge { display: block; } }
+
+    /* Template Grid */
+    .section-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--gray-400);
+      margin-bottom: 0.75rem;
+    }
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (min-width: 640px) { .template-grid { grid-template-columns: repeat(3, 1fr); } }
+    
+    .template-btn {
+      background: var(--gray-900);
+      border: 2px solid var(--gray-800);
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #fff;
+    }
+    .template-btn:hover { border-color: var(--purple); background: var(--gray-800); }
+    .template-btn.active { border-color: var(--purple); background: rgba(147, 51, 234, 0.15); }
+    .template-icon { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .template-name { font-size: 0.875rem; font-weight: 500; }
+
+    /* Form Grid */
+    .form-grid {
+      display: grid;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* Cards */
+    .card {
+      background: var(--gray-900);
+      border: 1px solid var(--gray-800);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .card-title.purple { color: var(--purple); }
+    .card-title.pink { color: var(--pink); }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 0.75rem; }
+    .form-group:last-child { margin-bottom: 0; }
+    
+    input, textarea {
+      width: 100%;
+      background: var(--gray-800);
+      border: 1px solid var(--gray-700);
+      border-radius: 0.5rem;
+      padding: 0.625rem 0.875rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--purple);
+    }
+    input::placeholder, textarea::placeholder { color: var(--gray-500); }
+    textarea { resize: none; min-height: 200px; }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--gray-800);
+      color: #fff;
+      border: 1px solid var(--gray-700);
+    }
+    .btn-secondary:hover { background: var(--gray-700); }
+
+    /* Tips Box */
+    .tips-box {
+      background: rgba(147, 51, 234, 0.1);
+      border: 1px solid rgba(147, 51, 234, 0.2);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-top: 1.5rem;
+    }
+    .tips-title {
+      font-weight: 600;
+      color: var(--purple);
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .tips-list {
+      font-size: 0.8rem;
+      color: var(--gray-400);
+      list-style: none;
+    }
+    .tips-list li { margin-bottom: 0.25rem; }
+    .tips-list strong { color: var(--gray-300); }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      overflow: auto;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #fff;
+      max-width: 800px;
+      width: 100%;
+      border-radius: 0.75rem;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    .modal-header {
+      position: sticky;
+      top: 0;
+      background: var(--gray-100);
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .modal-title { font-weight: 600; color: var(--gray-700); }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-500);
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--gray-700); }
+    .modal-body { padding: 2rem; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--gray-800);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: #059669; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-section">
+        <div class="logo-icon">TS</div>
+        <div>
+          <div class="logo-text">
+            <span class="text-purple">TORA</span><span class="text-pink">SHAOUT</span>
+          </div>
+          <div class="logo-subtitle">Document Generator</div>
+        </div>
+      </div>
+      <div class="header-badge">📱 Works on any device</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Template Selection -->
+    <div style="margin-top: 1.5rem;">
+      <label class="section-label">📋 Select Template</label>
+      <div class="template-grid">
+        <button class="template-btn active" data-template="welcome" onclick="loadTemplate('welcome')">
+          <div class="template-icon">👋</div>
+          <div class="template-name">Welcome</div>
+        </button>
+        <button class="template-btn" data-template="talent" onclick="loadTemplate('talent')">
+          <div class="template-icon">⭐</div>
+          <div class="template-name">Talent Onboard</div>
+        </button>
+        <button class="template-btn" data-template="partnership" onclick="loadTemplate('partnership')">
+          <div class="template-icon">🤝</div>
+          <div class="template-name">Partnership</div>
+        </button>
+        <button class="template-btn" data-template="invoice" onclick="loadTemplate('invoice')">
+          <div class="template-icon">💰</div>
+          <div class="template-name">Invoice</div>
+        </button>
+        <button class="template-btn" data-template="thanks" onclick="loadTemplate('thanks')">
+          <div class="template-icon">❤️</div>
+          <div class="template-name">Thank You</div>
+        </button>
+        <button class="template-btn" data-template="custom" onclick="loadTemplate('custom')">
+          <div class="template-icon">✏️</div>
+          <div class="template-name">Custom</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="form-grid">
+      <!-- Left Column -->
+      <div>
+        <!-- Recipient -->
+        <div class="card" style="margin-bottom: 1rem;">
+          <h3 class="card-title purple">📬 Recipient</h3>
+          <div class="form-group">
+            <input type="text" id="recipientName" placeholder="Recipient Name *">
+          </div>
+          <div class="form-group">
+            <input type="text" id="recipientTitle" placeholder="Title (e.g., CEO)">
+          </div>
+          <div class="form-group">
+            <input type="text" id="recipientCompany" placeholder="Company">
+          </div>
+          <div class="form-group">
+            <input type="text" id="recipientAddress" placeholder="City, Country">
+          </div>
+        </div>
+
+        <!-- Sender -->
+        <div class="card">
+          <h3 class="card-title pink">✍️ Sender (You)</h3>
+          <div class="form-group">
+            <input type="text" id="senderName" placeholder="Your Name *">
+          </div>
+          <div class="form-group">
+            <input type="text" id="senderTitle" placeholder="Your Title">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="card">
+        <h3 class="card-title purple">📝 Letter Content</h3>
+        <div class="form-group">
+          <input type="text" id="subject" placeholder="Subject Line *">
+        </div>
+        <div class="form-group">
+          <textarea id="body" placeholder="Letter body..." rows="12"></textarea>
+        </div>
+        <div class="form-group">
+          <input type="text" id="closing" placeholder="Closing" value="Best regards,">
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="previewLetter()">👁️ Preview</button>
+      <button class="btn btn-primary" onclick="printLetter()">📄 Print / Save PDF</button>
+      <button class="btn btn-secondary" onclick="downloadHTML()">⬇️ Download HTML</button>
+      <button class="btn btn-secondary" onclick="copyText()">📋 Copy Text</button>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips-box">
+      <h3 class="tips-title">💡 How to Use</h3>
+      <ul class="tips-list">
+        <li>• <strong>Print / Save PDF:</strong> Opens print dialog → Choose "Save as PDF"</li>
+        <li>• <strong>Download HTML:</strong> Get an editable file for any browser</li>
+        <li>• <strong>Copy Text:</strong> Plain text for emails or WhatsApp</li>
+        <li>• <strong>Bookmark this page</strong> for quick access on any device</li>
+      </ul>
+    </div>
+  </main>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">Letter Preview</span>
+        <button class="modal-close" onclick="closePreview()">&times;</button>
+      </div>
+      <div id="previewContent" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // Brand config
+    const BRAND = {
+      tagline: 'Your Favorite Stars, Delivered Anywhere in the World',
+      email: 'hello@torashaout.com',
+      whatsapp: '+82 10 4837 0343',
+      website: 'www.torashaout.com',
+      address: 'Harare, Zimbabwe'
+    };
+
+    // Templates
+    const TEMPLATES = {
+      welcome: {
+        subject: 'Welcome to ToraShaout Partner Program',
+        body: `On behalf of the entire ToraShaout team, I am delighted to welcome you to our exclusive Partner Program. Your participation marks the beginning of an exciting collaboration.
+
+As a partner, you will have access to premium features, priority support, and exclusive opportunities to connect with Zimbabwe's most celebrated personalities.
+
+We are committed to ensuring your success on our platform. Our dedicated team is available to assist you every step of the way.
+
+We look forward to building a successful partnership together.`
+      },
+      talent: {
+        subject: 'Welcome to ToraShaout - Talent Onboarding',
+        body: `Congratulations! We are thrilled to welcome you to ToraShaout as one of our featured celebrities. Your fans are eager to connect with you through personalized video messages.
+
+Here's what happens next:
+
+1. Complete your profile setup in the Talent Dashboard
+2. Set your pricing (both USD and ZIG options)
+3. Upload a welcome video for your profile
+4. Start receiving booking requests from fans worldwide
+
+Our team is here to support you. If you have any questions, please don't hesitate to reach out via WhatsApp or email.`
+      },
+      partnership: {
+        subject: 'Partnership Proposal - ToraShaout',
+        body: `I am writing to introduce ToraShaout, Zimbabwe's premier celebrity video messaging platform, and to explore a potential partnership opportunity.
+
+ToraShaout connects fans worldwide with Zimbabwe's biggest stars for personalized video messages—perfect for birthdays, graduations, corporate events, and more.
+
+We believe a partnership between our organizations could create significant value for both parties. Specifically, we propose:
+
+• Co-branded marketing campaigns targeting the Zimbabwean diaspora
+• Exclusive celebrity content for your audience
+• Revenue sharing on referred bookings
+
+I would welcome the opportunity to discuss this further at your convenience.`
+      },
+      invoice: {
+        subject: 'Invoice for Services Rendered',
+        body: `Please find attached the invoice for services provided through ToraShaout.
+
+Payment Details:
+• Due Date: Within 14 days of receipt
+• Payment Methods: Bank transfer, EcoCash, or international wire
+
+Should you have any questions regarding this invoice, please contact our accounts team at accounts@torashaout.com.
+
+Thank you for your continued partnership.`
+      },
+      thanks: {
+        subject: 'Thank You for Your Support',
+        body: `I wanted to take a moment to personally thank you for your support of ToraShaout.
+
+Your trust in our platform means the world to us. We are committed to delivering exceptional experiences and connecting fans with the celebrities they love.
+
+If there's anything we can do to improve your experience, please don't hesitate to let us know.
+
+Thank you once again for being part of the ToraShaout family.`
+      },
+      custom: { subject: '', body: '' }
+    };
+
+    // Load template
+    function loadTemplate(templateId) {
+      const template = TEMPLATES[templateId];
+      document.getElementById('subject').value = template.subject;
+      document.getElementById('body').value = template.body;
+      
+      document.querySelectorAll('.template-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[data-template="${templateId}"]`).classList.add('active');
+    }
+
+    // Get form data
+    function getFormData() {
+      return {
+        recipientName: document.getElementById('recipientName').value || '[Recipient Name]',
+        recipientTitle: document.getElementById('recipientTitle').value,
+        recipientCompany: document.getElementById('recipientCompany').value,
+        recipientAddress: document.getElementById('recipientAddress').value,
+        subject: document.getElementById('subject').value || '[Subject]',
+        body: document.getElementById('body').value || '[Letter body]',
+        closing: document.getElementById('closing').value || 'Best regards,',
+        senderName: document.getElementById('senderName').value || '[Your Name]',
+        senderTitle: document.getElementById('senderTitle').value
+      };
+    }
+
+    // Get current date
+    function getCurrentDate() {
+      return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Show toast
+    function showToast(message, type = '') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show' + (type ? ' ' + type : '');
+      setTimeout(() => toast.className = 'toast', 3000);
+    }
+
+    // Generate letter HTML (for print/download)
+    function generateLetterHTML(data) {
+      return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ToraShaout Letter - ${data.subject}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #1f1f1f; }
+    .page { width: 8.5in; min-height: 11in; margin: 0 auto; padding: 0.75in 1in 1in 1in; background: white; position: relative; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .logo { font-size: 24pt; font-weight: 700; }
+    .logo-purple { color: #9333EA; }
+    .logo-pink { color: #DB2777; }
+    .tagline { font-size: 8pt; color: #9CA3AF; font-style: italic; margin-top: 4px; }
+    .contact { text-align: right; font-size: 9pt; }
+    .contact-website { color: #9333EA; }
+    .contact-email { color: #374151; }
+    .accent-bar { display: flex; height: 4px; margin-bottom: 40px; }
+    .accent-purple { flex: 1; background: #9333EA; }
+    .accent-pink { flex: 1; background: #DB2777; }
+    .date { text-align: right; margin-bottom: 30px; color: #374151; }
+    .recipient { margin-bottom: 30px; }
+    .recipient-name { font-weight: 600; }
+    .subject { margin-bottom: 20px; }
+    .subject-re { color: #9333EA; font-weight: 600; }
+    .salutation { margin-bottom: 15px; }
+    .body { margin-bottom: 30px; white-space: pre-wrap; }
+    .closing { margin-bottom: 50px; }
+    .signature-name { font-weight: 600; color: #9333EA; }
+    .signature-title { color: #374151; }
+    .signature-logo { font-size: 11pt; font-weight: 700; margin-top: 5px; }
+    .footer { position: absolute; bottom: 0.75in; left: 1in; right: 1in; }
+    .footer-bar { display: flex; height: 2px; margin-bottom: 15px; }
+    .footer-content { display: flex; justify-content: space-between; font-size: 8pt; color: #9CA3AF; }
+    .copyright { text-align: center; font-size: 7pt; color: #9CA3AF; margin-top: 8px; }
+    @media print { 
+      .page { width: 100%; min-height: auto; padding: 0.5in; } 
+      .footer { position: relative; margin-top: 60px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div>
+        <div class="logo"><span class="logo-purple">TORA</span><span class="logo-pink">SHAOUT</span></div>
+        <div class="tagline">${BRAND.tagline}</div>
+      </div>
+      <div class="contact">
+        <div class="contact-website">${BRAND.website}</div>
+        <div class="contact-email">${BRAND.email}</div>
+      </div>
+    </div>
+    <div class="accent-bar"><div class="accent-purple"></div><div class="accent-pink"></div></div>
+    <div class="date">${getCurrentDate()}</div>
+    <div class="recipient">
+      <div class="recipient-name">${data.recipientName}</div>
+      ${data.recipientTitle ? `<div>${data.recipientTitle}</div>` : ''}
+      ${data.recipientCompany ? `<div>${data.recipientCompany}</div>` : ''}
+      ${data.recipientAddress ? `<div>${data.recipientAddress}</div>` : ''}
+    </div>
+    <div class="subject"><span class="subject-re">RE:</span> ${data.subject}</div>
+    <div class="salutation">Dear ${data.recipientName.replace('[Recipient Name]', 'Sir/Madam')},</div>
+    <div class="body">${data.body}</div>
+    <div class="closing">${data.closing}</div>
+    <div class="signature">
+      <div class="signature-name">${data.senderName}</div>
+      ${data.senderTitle ? `<div class="signature-title">${data.senderTitle}</div>` : ''}
+      <div class="signature-logo"><span class="logo-purple">TORA</span><span class="logo-pink">SHAOUT</span></div>
+    </div>
+    <div class="footer">
+      <div class="footer-bar"><div class="accent-pink"></div><div class="accent-purple"></div></div>
+      <div class="footer-content">
+        <div>${BRAND.address}</div>
+        <div>WhatsApp: ${BRAND.whatsapp}</div>
+        <div>Page 1</div>
+      </div>
+      <div class="copyright">© ${new Date().getFullYear()} ToraShaout. All rights reserved.</div>
+    </div>
+  </div>
+</body>
+</html>`;
+    }
+
+    // Preview letter
+    function previewLetter() {
+      const data = getFormData();
+      const previewHTML = `
+        <div style="font-family: Inter, Arial, sans-serif; color: #1f1f1f;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+            <div>
+              <div style="font-size: 24px; font-weight: 700;">
+                <span style="color: #9333EA;">TORA</span><span style="color: #DB2777;">SHAOUT</span>
+              </div>
+              <div style="font-size: 10px; color: #9CA3AF; font-style: italic;">${BRAND.tagline}</div>
+            </div>
+            <div style="text-align: right; font-size: 11px;">
+              <div style="color: #9333EA;">${BRAND.website}</div>
+              <div style="color: #374151;">${BRAND.email}</div>
+            </div>
+          </div>
+          <div style="display: flex; height: 4px; margin-bottom: 30px;">
+            <div style="flex: 1; background: #9333EA;"></div>
+            <div style="flex: 1; background: #DB2777;"></div>
+          </div>
+          <div style="text-align: right; margin-bottom: 25px; color: #374151;">${getCurrentDate()}</div>
+          <div style="margin-bottom: 25px;">
+            <div style="font-weight: 600;">${data.recipientName}</div>
+            ${data.recipientTitle ? `<div>${data.recipientTitle}</div>` : ''}
+            ${data.recipientCompany ? `<div>${data.recipientCompany}</div>` : ''}
+            ${data.recipientAddress ? `<div>${data.recipientAddress}</div>` : ''}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <span style="color: #9333EA; font-weight: 600;">RE:</span> 
+            <span style="font-weight: 600;">${data.subject}</span>
+          </div>
+          <div style="margin-bottom: 15px;">Dear ${data.recipientName.replace('[Recipient Name]', 'Sir/Madam')},</div>
+          <div style="margin-bottom: 25px; white-space: pre-wrap; line-height: 1.6;">${data.body}</div>
+          <div style="margin-bottom: 40px;">${data.closing}</div>
+          <div>
+            <div style="font-weight: 600; color: #9333EA;">${data.senderName}</div>
+            ${data.senderTitle ? `<div style="color: #374151;">${data.senderTitle}</div>` : ''}
+            <div style="font-weight: 700; font-size: 12px; margin-top: 5px;">
+              <span style="color: #9333EA;">TORA</span><span style="color: #DB2777;">SHAOUT</span>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('previewContent').innerHTML = previewHTML;
+      document.getElementById('previewModal').classList.add('active');
+    }
+
+    function closePreview() {
+      document.getElementById('previewModal').classList.remove('active');
+    }
+
+    // Print letter
+    function printLetter() {
+      const data = getFormData();
+      const html = generateLetterHTML(data);
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 300);
+    }
+
+    // Download HTML
+    function downloadHTML() {
+      const data = getFormData();
+      const html = generateLetterHTML(data);
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ToraShaout-Letter-${data.recipientName.replace(/[^a-zA-Z0-9]/g, '-')}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('✅ HTML file downloaded!', 'success');
+    }
+
+    // Copy text
+    function copyText() {
+      const data = getFormData();
+      const text = `${getCurrentDate()}
+
+${data.recipientName}
+${data.recipientTitle}
+${data.recipientCompany}
+${data.recipientAddress}
+
+RE: ${data.subject}
+
+Dear ${data.recipientName.replace('[Recipient Name]', 'Sir/Madam')},
+
+${data.body}
+
+${data.closing}
+
+${data.senderName}
+${data.senderTitle}
+ToraShaout
+${BRAND.email}
+${BRAND.website}`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ Copied to clipboard!', 'success');
+      });
+    }
+
+    // Close modal on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePreview();
+    });
+
+    // Close modal on backdrop click
+    document.getElementById('previewModal').addEventListener('click', (e) => {
+      if (e.target.id === 'previewModal') closePreview();
+    });
+
+    // Initialize
+    loadTemplate('welcome');
+  </script>
+</body>
+</html>
