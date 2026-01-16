@@ -433,6 +433,22 @@ textarea.input-error:focus {
   margin-top: 1.5rem;
 }
 
+.login-footer p {
+  margin-bottom: 0.5rem;
+}
+
+.request-access-link {
+  color: var(--purple);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.request-access-link:hover {
+  color: var(--pink);
+  text-decoration: underline;
+}
+
 /* User Menu */
 .header-right {
   display: flex;

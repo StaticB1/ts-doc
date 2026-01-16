@@ -65,7 +65,11 @@
       </button>
 
       <p class="login-error" id="loginError" role="alert" aria-live="polite"></p>
-      <p class="login-footer">Contact admin for access</p>
+
+      <div class="login-footer">
+        <p>Don't have access?</p>
+        <a href="#" class="request-access-link" onclick="requestAccess(event)">Request Access</a>
+      </div>
     </div>
   </div>
 
@@ -219,6 +223,6 @@
   <!-- Toast (live region for announcements) -->
   <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

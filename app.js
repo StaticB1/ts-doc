@@ -138,6 +138,26 @@ function signOut() {
     });
 }
 
+// Request access - opens email client with pre-filled request
+function requestAccess(event) {
+  event.preventDefault();
+  const adminEmail = 'info@torashaout.com';
+  const subject = encodeURIComponent('Request Access - ToraShaout Document Generator');
+  const body = encodeURIComponent(`Hello,
+
+I would like to request access to the ToraShaout Document Generator.
+
+My details:
+- Name: [Your Full Name]
+- Email: [Your Email Address]
+- Role/Department: [Your Role]
+- Reason for access: [Brief explanation]
+
+Thank you.`);
+
+  window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+}
+
 // Listen for auth state changes
 if (auth) {
   auth.onAuthStateChanged((user) => {
