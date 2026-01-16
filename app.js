@@ -1,3 +1,178 @@
+// ============================================
+// FIREBASE AUTHENTICATION
+// ============================================
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBK3y26uOHKZoeZkdgBUthzMSBsiZNxxHA",
+  authDomain: "ts-doc-70115.firebaseapp.com",
+  projectId: "ts-doc-70115",
+  storageBucket: "ts-doc-70115.firebasestorage.app",
+  messagingSenderId: "555836340940",
+  appId: "1:555836340940:web:8020212e91b10abc9a6069",
+  measurementId: "G-H40FCV4CDD"
+};
+
+// Authorized users - add email addresses of team members who can access
+// This is a whitelist - only these emails can use the app
+const AUTHORIZED_USERS = [
+  'bsiwonde@torashaout.com',
+  'bsiwonde@gmail.com',
+  'shantymachingauta@gmail.com',
+  'anodiwa@torashaout.com',
+  'info@torashaout.com',
+  // Add your team members' emails here:
+  // 'team.member@example.com',
+];
+
+// Initialize Firebase
+let auth = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth();
+} catch (e) {
+  console.error('Firebase initialization error:', e);
+}
+
+// Check if user is authorized
+function isUserAuthorized(email) {
+  return AUTHORIZED_USERS.includes(email.toLowerCase());
+}
+
+// Show login screen
+function showLoginScreen() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.querySelector('header').style.display = 'none';
+  document.querySelector('main').style.display = 'none';
+  document.getElementById('userMenu').style.display = 'none';
+}
+
+// Show app (hide login)
+function showApp(user) {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.querySelector('header').style.display = '';
+  document.querySelector('main').style.display = '';
+  document.getElementById('userMenu').style.display = 'flex';
+  document.getElementById('userEmail').textContent = user.email;
+}
+
+// Show login error
+function showLoginError(message) {
+  const errorEl = document.getElementById('loginError');
+  errorEl.textContent = message;
+}
+
+// Clear login error
+function clearLoginError() {
+  document.getElementById('loginError').textContent = '';
+}
+
+// Sign in with email/password
+function signInWithEmail() {
+  clearLoginError();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!email || !password) {
+    showLoginError('Please enter email and password');
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // Check if user is authorized
+      if (!isUserAuthorized(userCredential.user.email)) {
+        auth.signOut();
+        showLoginError('Access denied. Contact admin for authorization.');
+        return;
+      }
+    })
+    .catch((error) => {
+      console.error('Sign in error:', error);
+      switch (error.code) {
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          showLoginError('Invalid email or password');
+          break;
+        case 'auth/too-many-requests':
+          showLoginError('Too many attempts. Try again later.');
+          break;
+        default:
+          showLoginError('Sign in failed. Please try again.');
+      }
+    });
+}
+
+// Sign in with Google
+function signInWithGoogle() {
+  clearLoginError();
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  auth.signInWithPopup(provider)
+    .then((result) => {
+      // Check if user is authorized
+      if (!isUserAuthorized(result.user.email)) {
+        auth.signOut();
+        showLoginError('Access denied. Contact admin for authorization.');
+        return;
+      }
+    })
+    .catch((error) => {
+      console.error('Google sign in error:', error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        return; // User cancelled, no error needed
+      }
+      showLoginError('Google sign in failed. Please try again.');
+    });
+}
+
+// Sign out
+function signOut() {
+  auth.signOut()
+    .then(() => {
+      showToast('Signed out successfully', 'success');
+    })
+    .catch((error) => {
+      console.error('Sign out error:', error);
+    });
+}
+
+// Listen for auth state changes
+if (auth) {
+  auth.onAuthStateChanged((user) => {
+    if (user && isUserAuthorized(user.email)) {
+      showApp(user);
+    } else {
+      showLoginScreen();
+      if (user) {
+        // User is signed in but not authorized
+        auth.signOut();
+      }
+    }
+  });
+} else {
+  // Firebase not configured - show warning in console
+  console.warn('Firebase not configured. Authentication disabled.');
+}
+
+// Handle Enter key on login form
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        signInWithEmail();
+      }
+    });
+  }
+});
+
+// ============================================
+// APP CODE
+// ============================================
+
 // Storage key
 const STORAGE_KEY = 'torashaout_form_data';
 
