@@ -147,7 +147,7 @@ function signOut() {
 const EMAILJS_CONFIG = {
   publicKey: 'pZ4jWfZPvM3xnDJ4w',
   serviceId: 'torashaout',
-  templateId: 'template_95lfce9'
+  templateId: 'template_a3cmuzg'
 };
 
 // Initialize EmailJS
@@ -175,11 +175,17 @@ function closeAccessModal() {
 
 // Submit access request via EmailJS
 function submitAccessRequest() {
+  console.log('Submit button clicked');
+
   const name = document.getElementById('requestName').value.trim();
   const email = document.getElementById('requestEmail').value.trim();
   const role = document.getElementById('requestRole').value.trim();
   const reason = document.getElementById('requestReason').value.trim();
   const btn = document.getElementById('submitAccessBtn');
+
+  console.log('Form data:', { name, email, role, reason });
+  console.log('EmailJS config:', EMAILJS_CONFIG);
+  console.log('EmailJS available:', typeof emailjs !== 'undefined');
 
   // Validate required fields
   if (!name || !email || !role) {
