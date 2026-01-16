@@ -547,3 +547,28 @@ textarea.input-error:focus {
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--gray-800);
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+.site-footer a {
+  color: var(--purple);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.site-footer a:hover {
+  color: var(--pink);
+  text-decoration: underline;
+}
+
+.statotech-text {
+  color: var(--purple);
+}
