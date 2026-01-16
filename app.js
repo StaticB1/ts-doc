@@ -138,25 +138,99 @@ function signOut() {
     });
 }
 
-// Request access - opens email client with pre-filled request
+// ============================================
+// ACCESS REQUEST (EmailJS)
+// ============================================
+
+// EmailJS Configuration - Get these from https://www.emailjs.com
+// 1. Create account -> 2. Add Email Service -> 3. Create Template -> 4. Get Public Key
+const EMAILJS_CONFIG = {
+  publicKey: 'pZ4jWfZPvM3xnDJ4w',
+  serviceId: 'torashaout',
+  templateId: 'template_95lfce9'
+};
+
+// Initialize EmailJS
+if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey !== 'YOUR_PUBLIC_KEY') {
+  emailjs.init(EMAILJS_CONFIG.publicKey);
+}
+
+// Open access request modal
 function requestAccess(event) {
   event.preventDefault();
-  const adminEmail = 'info@torashaout.com';
-  const subject = encodeURIComponent('Request Access - ToraShaout Document Generator');
-  const body = encodeURIComponent(`Hello,
-
-I would like to request access to the ToraShaout Document Generator.
-
-My details:
-- Name: [Your Full Name]
-- Email: [Your Email Address]
-- Role/Department: [Your Role]
-- Reason for access: [Brief explanation]
-
-Thank you.`);
-
-  window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+  const modal = document.getElementById('accessRequestModal');
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  document.getElementById('requestName').focus();
 }
+
+// Close access request modal
+function closeAccessModal() {
+  const modal = document.getElementById('accessRequestModal');
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
+  // Reset form
+  document.getElementById('accessRequestForm').reset();
+}
+
+// Submit access request via EmailJS
+function submitAccessRequest() {
+  const name = document.getElementById('requestName').value.trim();
+  const email = document.getElementById('requestEmail').value.trim();
+  const role = document.getElementById('requestRole').value.trim();
+  const reason = document.getElementById('requestReason').value.trim();
+  const btn = document.getElementById('submitAccessBtn');
+
+  // Validate required fields
+  if (!name || !email || !role) {
+    showToast('Please fill in all required fields', 'error');
+    return;
+  }
+
+  // Check if EmailJS is configured
+  if (EMAILJS_CONFIG.publicKey === 'YOUR_PUBLIC_KEY') {
+    showToast('Email service not configured. Contact admin directly.', 'error');
+    return;
+  }
+
+  // Disable button and show loading
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  // Prepare template parameters
+  const templateParams = {
+    from_name: name,
+    from_email: email,
+    from_role: role,
+    message: reason || 'No reason provided',
+    to_email: 'info@torashaout.com'
+  };
+
+  // Send email
+  emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
+    .then(() => {
+      closeAccessModal();
+      showToast('Access request sent successfully!', 'success');
+    })
+    .catch((error) => {
+      console.error('EmailJS error:', error);
+      showToast('Failed to send request. Try again later.', 'error');
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = 'Submit Request';
+    });
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const accessModal = document.getElementById('accessRequestModal');
+    if (accessModal && accessModal.classList.contains('active')) {
+      closeAccessModal();
+    }
+  }
+});
 
 // Listen for auth state changes
 if (auth) {
